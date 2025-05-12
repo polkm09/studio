@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'FEIWU HTML Studio',
+  title: 'FEIWU Studio',
   description: '粘贴HTML代码并生成唯一的、可公开访问的网页。',
 };
 

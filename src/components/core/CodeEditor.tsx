@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Share2, Link as LinkIcon } from 'lucide-react';
 import { MOCK_HTML_PAGES } from '@/lib/types'; // For mock page creation
+import { useAuth } from '@/hooks/useAuth';
 
 const CodeEditor = () => {
   const [htmlCode, setHtmlCode] = useState('');
@@ -15,6 +16,7 @@ const CodeEditor = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [baseUrl, setBaseUrl] = useState('');
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
     // Ensure this runs only on the client side
@@ -40,12 +42,13 @@ const CodeEditor = () => {
         id: uniqueId,
         htmlContent: htmlCode,
         createdAt: new Date().toISOString(),
-        creatorId: 'current-user-id' // Should come from auth context
+        creatorId: user?.id || 'unknown-user', 
+        creatorMobile: user?.mobile 
       };
       MOCK_HTML_PAGES.push(newPage); // Add to mock DB
 
       setGeneratedLink(`${baseUrl}/view/${uniqueId}`);
-      toast({ title: "页面已发布!", description: "你的HTML页面现已上线。" });
+      toast({ title: "页面已发布", description: "你的HTML页面现已上线。" });
       setHtmlCode(''); // Clear textarea after successful submission
     } catch (error) {
       toast({ title: "发布错误", description: (error as Error).message || "无法发布你的页面。", variant: "destructive" });
@@ -58,7 +61,7 @@ const CodeEditor = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink)
         .then(() => {
-          toast({ title: "已复制!", description: "链接已复制到剪贴板。" });
+          toast({ title: "已复制", description: "链接已复制到剪贴板。" });
         })
         .catch(() => {
           toast({ title: "复制失败", description: "无法复制链接。", variant: "destructive" });
@@ -69,7 +72,7 @@ const CodeEditor = () => {
   return (
     <Card className="w-full shadow-xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-bold text-center">HTML Studio</CardTitle>
+        <CardTitle className="text-3xl font-bold text-center">Studio</CardTitle>
         <CardDescription className="text-center">
           在下方粘贴你的HTML代码，然后点击“发布”生成可分享的页面。
         </CardDescription>

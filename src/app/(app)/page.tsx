@@ -35,7 +35,7 @@ export default function HomePage() {
       <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
         <Card className="w-full max-w-lg text-center shadow-xl">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold">欢迎来到 FEIWU HTML Studio</CardTitle>
+            <CardTitle className="text-3xl font-bold">欢迎来到 FEIWU Studio</CardTitle>
             <CardDescription className="text-md">
               即时创建和分享实时HTML页面。
             </CardDescription>
