@@ -1,8 +1,9 @@
+
 "use client";
 
-import type { User } from '@/lib/types';
+import type { User, InvitationCode } from '@/lib/types';
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { MOCK_USERS, MOCK_USER_CREDENTIALS } from '@/lib/types'; // For mock login
+import { MOCK_USERS, MOCK_USER_CREDENTIALS, MOCK_INVITATION_CODES } from '@/lib/types'; 
 
 interface AuthContextType {
   user: User | null;
@@ -51,26 +52,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Simulate API call & invitation code check
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // Basic mobile validation (more robust needed for prod)
     if (!/^\d{11}$/.test(mobile)) {
       setLoading(false);
-      throw new Error("Invalid mobile phone number format.");
+      throw new Error("无效的手机号码格式。");
     }
 
-    // Mock invitation code validation (In real app, check MOCK_INVITATION_CODES or DB)
-    if (invitationCode !== 'WELCOME123' && invitationCode !== 'FEIWU2024') {
+    const codeEntryIndex = MOCK_INVITATION_CODES.findIndex(c => c.code === invitationCode.toUpperCase());
+    
+    if (codeEntryIndex === -1) {
       setLoading(false);
-      throw new Error("Invalid invitation code.");
+      throw new Error("邀请码无效。");
+    }
+
+    const codeEntry = MOCK_INVITATION_CODES[codeEntryIndex];
+
+    if (!codeEntry.isValid || codeEntry.usedBy) {
+      setLoading(false);
+      throw new Error("邀请码无效或已被使用。");
     }
 
     if (MOCK_USERS.find(u => u.mobile === mobile)) {
       setLoading(false);
-      throw new Error("Mobile number already registered.");
+      throw new Error("手机号码已被注册。");
     }
     
     const newUser: User = { id: `user-${Date.now()}`, mobile, role: 'user' };
-    // In real app: MOCK_USERS.push(newUser); MOCK_USER_CREDENTIALS[mobile] = password; Mark invitation code as used.
-    setUser(newUser);
+    MOCK_USERS.push(newUser); // Add user to mock list
+    MOCK_USER_CREDENTIALS[mobile] = password; // Add credentials to mock list
+
+    // Mark invitation code as used
+    MOCK_INVITATION_CODES[codeEntryIndex] = {
+      ...codeEntry,
+      isValid: false,
+      usedBy: newUser.id,
+    };
+    
+    // Note: In a real app, MOCK_USERS, MOCK_USER_CREDENTIALS, and MOCK_INVITATION_CODES updates
+    // would be persistent database operations. Here they modify in-memory arrays.
+    // For MOCK_INVITATION_CODES, if admin page is open, it won't reflect change until refresh.
+
+    setUser(newUser); // Set current user for the session
     sessionStorage.setItem('feiwuUser', JSON.stringify(newUser));
     setLoading(false);
     return newUser;
@@ -87,3 +108,4 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+

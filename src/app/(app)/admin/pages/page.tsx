@@ -28,12 +28,15 @@ export default function ManagePagesPage() {
   const [baseUrl, setBaseUrl] = useState('');
 
   useEffect(() => {
-    // Initialize pages state with a new array copy from MOCK_HTML_PAGES
-    // This ensures that if MOCK_HTML_PAGES is mutated elsewhere,
-    // this component initializes with its current state.
-    // Also guard against MOCK_HTML_PAGES being potentially undefined during HMR or build issues.
+    // Initializes 'pages' with a copy from the imported MOCK_HTML_PAGES when the component mounts.
+    // If MOCK_HTML_PAGES is updated by a server API route (e.g., after publishing a page),
+    // this client component will pick up the "new" state of the MOCK_HTML_PAGES module
+    // if it is reloaded (hard refresh) or remounts.
+    // Client-side navigation without a full remount might show stale data due to how modules are cached/handled.
     setPages(MOCK_HTML_PAGES ? [...MOCK_HTML_PAGES] : []);
-    setBaseUrl(window.location.origin);
+    if (typeof window !== "undefined") {
+      setBaseUrl(window.location.origin);
+    }
   }, []); // Empty dependency array ensures this runs once on mount
 
   const handleDeletePage = (pageId: string) => {
@@ -43,8 +46,6 @@ export default function ManagePagesPage() {
       setPages([...MOCK_HTML_PAGES]); // Update local state with a new copy from the mutated global mock
       toast({ title: "页面已删除", description: `已发布的页面 ${pageId} 已被移除。` });
     } else {
-      // If page not found in MOCK_HTML_PAGES (e.g., already deleted by another action/user)
-      // still refresh the local state from the source of truth.
       setPages([...MOCK_HTML_PAGES]);
       toast({ title: "删除提示", description: `页面 ${pageId} 未找到或已被删除。列表已刷新。`, variant: "default" });
     }
@@ -81,11 +82,13 @@ export default function ManagePagesPage() {
                   <TableCell>{page.creatorMobile || '无 (历史数据)'}</TableCell>
                   <TableCell>{format(new Date(page.createdAt), "yyyy年MM月dd日 HH:mm", { locale: zhCN })}</TableCell>
                   <TableCell>
-                    <Button variant="link" asChild className="p-0 h-auto">
-                      <Link href={`${baseUrl}/view/${page.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                        查看页面 <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-                      </Link>
-                    </Button>
+                    {baseUrl && (
+                      <Button variant="link" asChild className="p-0 h-auto">
+                        <Link href={`${baseUrl}/view/${page.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center">
+                          查看页面 <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                        </Link>
+                      </Button>
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <AlertDialog>
@@ -124,3 +127,4 @@ export default function ManagePagesPage() {
     </div>
   );
 }
+
