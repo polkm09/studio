@@ -157,7 +157,7 @@ export default function ManageInvitationCodesPage() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>您确定吗？</AlertDialogTitle>
+                            <AlertDialogTitle>你确定吗？</AlertDialogTitle>
                             <AlertDialogDescription>
                               此操作无法撤销。这将永久删除邀请码 “{code.code}”。
                             </AlertDialogDescription>

@@ -85,7 +85,7 @@ export default function ManagePagesPage() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>您确定吗？</AlertDialogTitle>
+                            <AlertDialogTitle>你确定吗？</AlertDialogTitle>
                             <AlertDialogDescription>
                               此操作无法撤销。这将永久删除ID为 “{page.id}” 的页面。
                               公开链接将变为404。

@@ -53,18 +53,18 @@ const LoginForm = () => {
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader>
         <CardTitle className="text-3xl font-bold text-center">登录</CardTitle>
-        <CardDescription className="text-center">访问您的 FEIWU.Studio 账户。</CardDescription>
+        <CardDescription className="text-center">访问你的 FEIWU.Studio 账户。</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="mobile">手机号码</Label>
-            <Input id="mobile" type="tel" placeholder="输入您的手机号码" {...register("mobile")} aria-invalid={errors.mobile ? "true" : "false"} />
+            <Input id="mobile" type="tel" placeholder="输入你的手机号码" {...register("mobile")} aria-invalid={errors.mobile ? "true" : "false"} />
             {errors.mobile && <p className="text-sm text-destructive">{errors.mobile.message}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">密码</Label>
-            <Input id="password" type="password" placeholder="输入您的密码" {...register("password")} aria-invalid={errors.password ? "true" : "false"} />
+            <Input id="password" type="password" placeholder="输入你的密码" {...register("password")} aria-invalid={errors.password ? "true" : "false"} />
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
@@ -86,4 +86,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-

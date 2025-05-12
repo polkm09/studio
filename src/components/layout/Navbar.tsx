@@ -49,7 +49,7 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <Link href="/">
                     <Code className="mr-2 h-4 w-4" />
-                    <span>游乐场</span>
+                    <span>Studio</span>
                   </Link>
                 </DropdownMenuItem>
                 {user.role === 'admin' && (

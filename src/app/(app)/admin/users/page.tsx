@@ -82,7 +82,7 @@ export default function ManageUsersPage() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>您确定吗？</AlertDialogTitle>
+                            <AlertDialogTitle>你确定吗？</AlertDialogTitle>
                             <AlertDialogDescription>
                               此操作无法撤销。这将永久删除手机号为 {user.mobile} 的用户账户。
                             </AlertDialogDescription>

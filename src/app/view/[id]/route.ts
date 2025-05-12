@@ -48,7 +48,7 @@ export async function GET(
       <body>
         <div class="container">
           <h1>404 - 页面未找到</h1>
-          <p>抱歉，您正在查找的页面不存在或已被移动。</p>
+          <p>抱歉，你正在查找的页面不存在或已被移动。</p>
           <p><a href="/">返回首页</a></p>
         </div>
       </body>

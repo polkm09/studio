@@ -36,7 +36,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
        <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] text-center p-4">
         <ShieldAlert className="w-16 h-16 text-destructive mb-4" />
         <h1 className="text-2xl font-bold mb-2">访问被拒绝</h1>
-        <p className="text-muted-foreground mb-6">您没有权限查看此页面。</p>
+        <p className="text-muted-foreground mb-6">你没有权限查看此页面。</p>
         <Button asChild>
           <Link href="/">返回首页</Link>
         </Button>

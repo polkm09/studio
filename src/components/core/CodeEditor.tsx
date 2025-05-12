@@ -45,10 +45,10 @@ const CodeEditor = () => {
       MOCK_HTML_PAGES.push(newPage); // Add to mock DB
 
       setGeneratedLink(`${baseUrl}/view/${uniqueId}`);
-      toast({ title: "页面已发布!", description: "您的HTML页面现已上线。" });
+      toast({ title: "页面已发布!", description: "你的HTML页面现已上线。" });
       setHtmlCode(''); // Clear textarea after successful submission
     } catch (error) {
-      toast({ title: "发布错误", description: (error as Error).message || "无法发布您的页面。", variant: "destructive" });
+      toast({ title: "发布错误", description: (error as Error).message || "无法发布你的页面。", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -69,14 +69,14 @@ const CodeEditor = () => {
   return (
     <Card className="w-full shadow-xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-bold text-center">HTML游乐场</CardTitle>
+        <CardTitle className="text-3xl font-bold text-center">HTML Studio</CardTitle>
         <CardDescription className="text-center">
-          在下方粘贴您的HTML代码，然后点击“发布!”生成可分享的页面。
+          在下方粘贴你的HTML代码，然后点击“发布”生成可分享的页面。
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Textarea
-          placeholder="<!-- 在此处粘贴您的HTML代码 -->"
+          placeholder="<!-- 在此处粘贴你的HTML代码 -->"
           value={htmlCode}
           onChange={(e) => setHtmlCode(e.target.value)}
           className="min-h-[300px] font-mono text-sm bg-card border-input rounded-md shadow-sm focus:ring-primary focus:border-primary"
@@ -88,7 +88,7 @@ const CodeEditor = () => {
           ) : (
             <Share2 className="mr-2 h-4 w-4" />
           )}
-          发布!
+          发布
         </Button>
       </CardContent>
       {generatedLink && (

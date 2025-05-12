@@ -25,7 +25,7 @@ export default function HomePage() {
     return (
       <div className="flex flex-col justify-center items-center min-h-[calc(100vh-10rem)] p-4 text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <p className="text-lg text-muted-foreground">正在加载您的游乐场...</p>
+        <p className="text-lg text-muted-foreground">正在加载你的 Studio...</p>
       </div>
     );
   }
@@ -35,14 +35,14 @@ export default function HomePage() {
       <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
         <Card className="w-full max-w-lg text-center shadow-xl">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold">欢迎来到 FEIWU HTML 游乐场</CardTitle>
+            <CardTitle className="text-3xl font-bold">欢迎来到 FEIWU HTML Studio</CardTitle>
             <CardDescription className="text-md">
               即时创建和分享实时HTML页面。
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <p>
-              请登录或注册以开始创建您的网页奇迹。
+              请登录或注册以开始创建你的网页奇迹。
               注册需要邀请码。
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -61,4 +61,3 @@ export default function HomePage() {
 
   return <CodeEditor />;
 }
-

@@ -38,7 +38,7 @@ const RegisterForm = () => {
     try {
       const user = await registerUser(data.mobile, data.password, data.invitationCode);
       if (user) {
-        toast({ title: "注册成功", description: `欢迎, ${user.mobile}！您现在可以登录了。` });
+        toast({ title: "注册成功", description: `欢迎, ${user.mobile}！你现在可以登录了。` });
         router.push('/login');
       } else {
         // This case might not be reached if registerUser throws errors for failures
@@ -71,13 +71,13 @@ const RegisterForm = () => {
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader>
         <CardTitle className="text-3xl font-bold text-center">注册</CardTitle>
-        <CardDescription className="text-center">创建您的 FEIWU.Studio 账户。</CardDescription>
+        <CardDescription className="text-center">创建你的 FEIWU.Studio 账户。</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="mobile">手机号码</Label>
-            <Input id="mobile" type="tel" placeholder="输入您的手机号码" {...register("mobile")} aria-invalid={errors.mobile ? "true" : "false"}/>
+            <Input id="mobile" type="tel" placeholder="输入你的手机号码" {...register("mobile")} aria-invalid={errors.mobile ? "true" : "false"}/>
             {errors.mobile && <p className="text-sm text-destructive">{errors.mobile.message}</p>}
           </div>
           <div className="space-y-2">
@@ -87,7 +87,7 @@ const RegisterForm = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="invitationCode">邀请码</Label>
-            <Input id="invitationCode" type="text" placeholder="输入您的邀请码" {...register("invitationCode")} aria-invalid={errors.invitationCode ? "true" : "false"}/>
+            <Input id="invitationCode" type="text" placeholder="输入你的邀请码" {...register("invitationCode")} aria-invalid={errors.invitationCode ? "true" : "false"}/>
             {errors.invitationCode && <p className="text-sm text-destructive">{errors.invitationCode.message}</p>}
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
@@ -109,4 +109,3 @@ const RegisterForm = () => {
 };
 
 export default RegisterForm;
-
