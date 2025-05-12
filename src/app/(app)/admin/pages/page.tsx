@@ -28,14 +28,26 @@ export default function ManagePagesPage() {
   const [baseUrl, setBaseUrl] = useState('');
 
   useEffect(() => {
-    setPages(MOCK_HTML_PAGES);
+    // Initialize pages state with a new array copy from MOCK_HTML_PAGES
+    // This ensures that if MOCK_HTML_PAGES is mutated elsewhere,
+    // this component initializes with its current state.
+    // Also guard against MOCK_HTML_PAGES being potentially undefined during HMR or build issues.
+    setPages(MOCK_HTML_PAGES ? [...MOCK_HTML_PAGES] : []);
     setBaseUrl(window.location.origin);
-  }, []);
+  }, []); // Empty dependency array ensures this runs once on mount
 
   const handleDeletePage = (pageId: string) => {
-    setPages(prevPages => prevPages.filter(page => page.id !== pageId));
-    MOCK_HTML_PAGES.splice(MOCK_HTML_PAGES.findIndex(p => p.id === pageId), 1);
-    toast({ title: "页面已删除", description: `已发布的页面 ${pageId} 已被移除。` });
+    const pageIndex = MOCK_HTML_PAGES.findIndex(p => p.id === pageId);
+    if (pageIndex > -1) {
+      MOCK_HTML_PAGES.splice(pageIndex, 1); // Mutate the global mock array
+      setPages([...MOCK_HTML_PAGES]); // Update local state with a new copy from the mutated global mock
+      toast({ title: "页面已删除", description: `已发布的页面 ${pageId} 已被移除。` });
+    } else {
+      // If page not found in MOCK_HTML_PAGES (e.g., already deleted by another action/user)
+      // still refresh the local state from the source of truth.
+      setPages([...MOCK_HTML_PAGES]);
+      toast({ title: "删除提示", description: `页面 ${pageId} 未找到或已被删除。列表已刷新。`, variant: "default" });
+    }
   };
 
   return (
