@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
@@ -31,31 +32,31 @@ export default function ManageUsersPage() {
     // Simulate API call
     setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
     MOCK_USERS.splice(MOCK_USERS.findIndex(u => u.id === userId), 1); // Update mock source
-    toast({ title: "User Deleted", description: `User with ID ${userId} has been removed.` });
+    toast({ title: "用户已删除", description: `ID为 ${userId} 的用户已被移除。` });
   };
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold tracking-tight">Manage Users</h1>
+      <h1 className="text-3xl font-bold tracking-tight">管理用户</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Registered Users List</CardTitle>
-          <CardDescription>View and manage all registered users in the system.</CardDescription>
+          <CardTitle>注册用户列表</CardTitle>
+          <CardDescription>查看和管理系统中所有注册用户。</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>User ID</TableHead>
-                <TableHead>Mobile Number</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>用户ID</TableHead>
+                <TableHead>手机号码</TableHead>
+                <TableHead>角色</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center h-24">No users found.</TableCell>
+                  <TableCell colSpan={4} className="text-center h-24">未找到用户。</TableCell>
                 </TableRow>
               )}
               {users.map((user) => (
@@ -67,7 +68,7 @@ export default function ManageUsersPage() {
                       user.role === 'admin' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
                     }`}>
                       {user.role === 'admin' ? <ShieldCheck className="w-3 h-3 mr-1.5" /> : <UserCircle className="w-3 h-3 mr-1.5" />}
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                      {user.role === 'admin' ? '管理员' : '用户'}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
@@ -76,24 +77,23 @@ export default function ManageUsersPage() {
                         <AlertDialogTrigger asChild>
                           <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
                             <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete User</span>
+                            <span className="sr-only">删除用户</span>
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogTitle>您确定吗？</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the user account
-                              for {user.mobile}.
+                              此操作无法撤销。这将永久删除手机号为 {user.mobile} 的用户账户。
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>取消</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDeleteUser(user.id)}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
-                              Delete
+                              删除
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -101,7 +101,7 @@ export default function ManageUsersPage() {
                     ) : (
                       <Button variant="ghost" size="icon" disabled>
                         <Trash2 className="h-4 w-4" />
-                         <span className="sr-only">Cannot Delete Admin</span>
+                         <span className="sr-only">不能删除管理员</span>
                       </Button>
                     )}
                   </TableCell>

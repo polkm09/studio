@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -34,26 +35,26 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     return (
        <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] text-center p-4">
         <ShieldAlert className="w-16 h-16 text-destructive mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-        <p className="text-muted-foreground mb-6">You do not have permission to view this page.</p>
+        <h1 className="text-2xl font-bold mb-2">访问被拒绝</h1>
+        <p className="text-muted-foreground mb-6">您没有权限查看此页面。</p>
         <Button asChild>
-          <Link href="/">Go to Homepage</Link>
+          <Link href="/">返回首页</Link>
         </Button>
       </div>
     );
   }
 
   const navItems = [
-    { href: '/admin', label: 'Dashboard', icon: Home },
-    { href: '/admin/users', label: 'Manage Users', icon: Users },
-    { href: '/admin/invitation-codes', label: 'Invitation Codes', icon: KeyRound },
-    { href: '/admin/pages', label: 'Manage Pages', icon: FileCode },
+    { href: '/admin', label: '仪表盘', icon: Home },
+    { href: '/admin/users', label: '管理用户', icon: Users },
+    { href: '/admin/invitation-codes', label: '邀请码', icon: KeyRound },
+    { href: '/admin/pages', label: '管理页面', icon: FileCode },
   ];
 
   return (
     <div className="flex flex-col md:flex-row gap-8">
       <aside className="md:w-64">
-        <h2 className="text-xl font-semibold mb-4 px-2">Admin Menu</h2>
+        <h2 className="text-xl font-semibold mb-4 px-2">管理菜单</h2>
         <nav className="flex flex-col space-y-1">
           {navItems.map((item) => (
             <Button

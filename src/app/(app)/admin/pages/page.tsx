@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Trash2, ExternalLink } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { zhCN } from 'date-fns/locale';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,43 +35,43 @@ export default function ManagePagesPage() {
   const handleDeletePage = (pageId: string) => {
     setPages(prevPages => prevPages.filter(page => page.id !== pageId));
     MOCK_HTML_PAGES.splice(MOCK_HTML_PAGES.findIndex(p => p.id === pageId), 1);
-    toast({ title: "Page Deleted", description: `Published page ${pageId} has been removed.` });
+    toast({ title: "页面已删除", description: `已发布的页面 ${pageId} 已被移除。` });
   };
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold tracking-tight">Manage Published Pages</h1>
+      <h1 className="text-3xl font-bold tracking-tight">管理已发布页面</h1>
       <Card>
         <CardHeader>
-          <CardTitle>Published Pages List</CardTitle>
-          <CardDescription>View and manage all pages published by users.</CardDescription>
+          <CardTitle>已发布页面列表</CardTitle>
+          <CardDescription>查看和管理所有用户发布的页面。</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Page ID</TableHead>
-                <TableHead>Creator Mobile</TableHead>
-                <TableHead>Created At</TableHead>
-                <TableHead>Preview Link</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>页面ID</TableHead>
+                <TableHead>创建者手机号</TableHead>
+                <TableHead>创建于</TableHead>
+                <TableHead>预览链接</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {pages.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center h-24">No pages published yet.</TableCell>
+                  <TableCell colSpan={5} className="text-center h-24">尚无已发布的页面。</TableCell>
                 </TableRow>
               )}
               {pages.map((page) => (
                 <TableRow key={page.id}>
                   <TableCell className="font-mono font-medium truncate max-w-xs">{page.id}</TableCell>
-                  <TableCell>{page.creatorMobile || 'N/A (Legacy)'}</TableCell>
-                  <TableCell>{format(new Date(page.createdAt), "MMM d, yyyy 'at' h:mm a")}</TableCell>
+                  <TableCell>{page.creatorMobile || '无 (历史数据)'}</TableCell>
+                  <TableCell>{format(new Date(page.createdAt), "yyyy年MM月dd日 HH:mm", { locale: zhCN })}</TableCell>
                   <TableCell>
                     <Button variant="link" asChild className="p-0 h-auto">
                       <Link href={`${baseUrl}/view/${page.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                        View Page <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                        查看页面 <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
                       </Link>
                     </Button>
                   </TableCell>
@@ -78,24 +80,24 @@ export default function ManagePagesPage() {
                         <AlertDialogTrigger asChild>
                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
                             <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete Page</span>
+                            <span className="sr-only">删除页面</span>
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogTitle>您确定吗？</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the page with ID "{page.id}".
-                              The public link will become a 404.
+                              此操作无法撤销。这将永久删除ID为 “{page.id}” 的页面。
+                              公开链接将变为404。
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>取消</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDeletePage(page.id)}
                               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
-                              Delete
+                              删除
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

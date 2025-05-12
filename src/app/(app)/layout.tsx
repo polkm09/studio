@@ -1,3 +1,4 @@
+
 import Navbar from '@/components/layout/Navbar';
 
 export default function AppLayout({
@@ -12,7 +13,7 @@ export default function AppLayout({
         {children}
       </main>
       <footer className="py-6 text-center text-sm text-muted-foreground border-t">
-        © {new Date().getFullYear()} Feiwu.studio. All rights reserved.
+        © {new Date().getFullYear()} 飞舞工作室. 保留所有权利.
       </footer>
     </div>
   );

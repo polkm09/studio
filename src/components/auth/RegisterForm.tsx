@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -15,9 +16,9 @@ import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 
 const registerSchema = z.object({
-  mobile: z.string().min(1, "Mobile number is required").regex(/^\d{11}$/, "Invalid mobile number format (must be 11 digits)"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  invitationCode: z.string().min(1, "Invitation code is required"),
+  mobile: z.string().min(1, "手机号码是必填项").regex(/^\d{11}$/, "无效的手机号码格式 (必须是11位数字)"),
+  password: z.string().min(6, "密码至少需要6个字符"),
+  invitationCode: z.string().min(1, "邀请码是必填项"),
 });
 
 type RegisterFormInputs = z.infer<typeof registerSchema>;
@@ -37,14 +38,30 @@ const RegisterForm = () => {
     try {
       const user = await registerUser(data.mobile, data.password, data.invitationCode);
       if (user) {
-        toast({ title: "Registration Successful", description: `Welcome, ${user.mobile}! You can now log in.` });
+        toast({ title: "注册成功", description: `欢迎, ${user.mobile}！您现在可以登录了。` });
         router.push('/login');
       } else {
         // This case might not be reached if registerUser throws errors for failures
-        toast({ title: "Registration Failed", description: "Could not complete registration.", variant: "destructive" });
+        toast({ title: "注册失败", description: "无法完成注册。", variant: "destructive" });
       }
     } catch (error) {
-      toast({ title: "Registration Error", description: (error as Error).message || "An unexpected error occurred.", variant: "destructive" });
+      let errorMessage = "发生意外错误。";
+      if (error instanceof Error) {
+        switch(error.message) {
+          case "Invalid mobile phone number format.":
+            errorMessage = "无效的手机号码格式。";
+            break;
+          case "Invalid invitation code.":
+            errorMessage = "邀请码无效。";
+            break;
+          case "Mobile number already registered.":
+            errorMessage = "手机号码已被注册。";
+            break;
+          default:
+            errorMessage = error.message;
+        }
+      }
+      toast({ title: "注册错误", description: errorMessage, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -53,37 +70,37 @@ const RegisterForm = () => {
   return (
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-bold text-center">Register</CardTitle>
-        <CardDescription className="text-center">Create your Feiwu.studio account.</CardDescription>
+        <CardTitle className="text-3xl font-bold text-center">注册</CardTitle>
+        <CardDescription className="text-center">创建您的飞舞工作室账户。</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="mobile">Mobile Number</Label>
-            <Input id="mobile" type="tel" placeholder="Enter your mobile number" {...register("mobile")} aria-invalid={errors.mobile ? "true" : "false"}/>
+            <Label htmlFor="mobile">手机号码</Label>
+            <Input id="mobile" type="tel" placeholder="输入您的手机号码" {...register("mobile")} aria-invalid={errors.mobile ? "true" : "false"}/>
             {errors.mobile && <p className="text-sm text-destructive">{errors.mobile.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="Choose a password" {...register("password")} aria-invalid={errors.password ? "true" : "false"}/>
+            <Label htmlFor="password">密码</Label>
+            <Input id="password" type="password" placeholder="选择一个密码" {...register("password")} aria-invalid={errors.password ? "true" : "false"}/>
             {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="invitationCode">Invitation Code</Label>
-            <Input id="invitationCode" type="text" placeholder="Enter your invitation code" {...register("invitationCode")} aria-invalid={errors.invitationCode ? "true" : "false"}/>
+            <Label htmlFor="invitationCode">邀请码</Label>
+            <Input id="invitationCode" type="text" placeholder="输入您的邀请码" {...register("invitationCode")} aria-invalid={errors.invitationCode ? "true" : "false"}/>
             {errors.invitationCode && <p className="text-sm text-destructive">{errors.invitationCode.message}</p>}
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Register
+            注册
           </Button>
         </form>
       </CardContent>
       <CardFooter className="flex flex-col items-center space-y-2">
         <p className="text-sm text-muted-foreground">
-          Already have an account?{' '}
+          已经有账户了？{' '}
           <Button variant="link" asChild className="p-0 h-auto">
-            <Link href="/login">Login here</Link>
+            <Link href="/login">在此登录</Link>
           </Button>
         </p>
       </CardFooter>

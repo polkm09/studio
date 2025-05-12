@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -23,7 +24,7 @@ const CodeEditor = () => {
 
   const handleShipIt = async () => {
     if (!htmlCode.trim()) {
-      toast({ title: "Empty Code", description: "Please paste some HTML code before shipping.", variant: "destructive" });
+      toast({ title: "代码为空", description: "请在发布前粘贴一些HTML代码。", variant: "destructive" });
       return;
     }
     setIsLoading(true);
@@ -44,10 +45,10 @@ const CodeEditor = () => {
       MOCK_HTML_PAGES.push(newPage); // Add to mock DB
 
       setGeneratedLink(`${baseUrl}/view/${uniqueId}`);
-      toast({ title: "Page Published!", description: "Your HTML page is now live." });
+      toast({ title: "页面已发布!", description: "您的HTML页面现已上线。" });
       setHtmlCode(''); // Clear textarea after successful submission
     } catch (error) {
-      toast({ title: "Error Publishing", description: (error as Error).message || "Could not publish your page.", variant: "destructive" });
+      toast({ title: "发布错误", description: (error as Error).message || "无法发布您的页面。", variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -57,10 +58,10 @@ const CodeEditor = () => {
     if (generatedLink) {
       navigator.clipboard.writeText(generatedLink)
         .then(() => {
-          toast({ title: "Copied!", description: "Link copied to clipboard." });
+          toast({ title: "已复制!", description: "链接已复制到剪贴板。" });
         })
         .catch(() => {
-          toast({ title: "Copy Failed", description: "Could not copy link.", variant: "destructive" });
+          toast({ title: "复制失败", description: "无法复制链接。", variant: "destructive" });
         });
     }
   };
@@ -68,18 +69,18 @@ const CodeEditor = () => {
   return (
     <Card className="w-full shadow-xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-bold text-center">HTML Playground</CardTitle>
+        <CardTitle className="text-3xl font-bold text-center">HTML游乐场</CardTitle>
         <CardDescription className="text-center">
-          Paste your HTML code below and click "Ship It!" to generate a shareable page.
+          在下方粘贴您的HTML代码，然后点击“发布!”生成可分享的页面。
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Textarea
-          placeholder="&lt;!-- Paste your HTML code here --&gt;"
+          placeholder="<!-- 在此处粘贴您的HTML代码 -->"
           value={htmlCode}
           onChange={(e) => setHtmlCode(e.target.value)}
           className="min-h-[300px] font-mono text-sm bg-card border-input rounded-md shadow-sm focus:ring-primary focus:border-primary"
-          aria-label="HTML Code Input"
+          aria-label="HTML代码输入框"
         />
         <Button onClick={handleShipIt} className="w-full sm:w-auto" disabled={isLoading}>
           {isLoading ? (
@@ -87,7 +88,7 @@ const CodeEditor = () => {
           ) : (
             <Share2 className="mr-2 h-4 w-4" />
           )}
-          Ship It!
+          发布!
         </Button>
       </CardContent>
       {generatedLink && (
@@ -105,7 +106,7 @@ const CodeEditor = () => {
             </a>
           </div>
           <Button variant="outline" size="sm" onClick={handleCopyToClipboard}>
-            Copy Link
+            复制链接
           </Button>
         </CardFooter>
       )}

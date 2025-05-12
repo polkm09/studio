@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from 'react';
@@ -24,7 +25,7 @@ export default function HomePage() {
     return (
       <div className="flex flex-col justify-center items-center min-h-[calc(100vh-10rem)] p-4 text-center">
         <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-        <p className="text-lg text-muted-foreground">Loading your playground...</p>
+        <p className="text-lg text-muted-foreground">正在加载您的游乐场...</p>
       </div>
     );
   }
@@ -34,22 +35,22 @@ export default function HomePage() {
       <div className="flex justify-center items-center min-h-[calc(100vh-10rem)]">
         <Card className="w-full max-w-lg text-center shadow-xl">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold">Welcome to Feiwu HTML Playground</CardTitle>
+            <CardTitle className="text-3xl font-bold">欢迎来到飞舞HTML游乐场</CardTitle>
             <CardDescription className="text-md">
-              Create and share live HTML pages instantly.
+              即时创建和分享实时HTML页面。
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <p>
-              Please log in or register to start crafting your web wonders.
-              An invitation code is required for registration.
+              请登录或注册以开始创建您的网页奇迹。
+              注册需要邀请码。
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button asChild size="lg" className="w-full sm:w-auto">
-                <Link href="/login">Login</Link>
+                <Link href="/login">登录</Link>
               </Button>
               <Button variant="outline" size="lg" asChild className="w-full sm:w-auto">
-                <Link href="/register">Register</Link>
+                <Link href="/register">注册</Link>
               </Button>
             </div>
           </CardContent>

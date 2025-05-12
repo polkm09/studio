@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -38,7 +39,7 @@ const Navbar = () => {
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">{user.role === 'admin' ? 'Admin' : 'User'}</p>
+                    <p className="text-sm font-medium leading-none">{user.role === 'admin' ? '管理员' : '用户'}</p>
                     <p className="text-xs leading-none text-muted-foreground">
                       {user.mobile}
                     </p>
@@ -48,31 +49,31 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <Link href="/">
                     <Code className="mr-2 h-4 w-4" />
-                    <span>Playground</span>
+                    <span>游乐场</span>
                   </Link>
                 </DropdownMenuItem>
                 {user.role === 'admin' && (
                   <DropdownMenuItem asChild>
                     <Link href="/admin">
                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                      <span>Admin Dashboard</span>
+                      <span>管理后台</span>
                     </Link>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={logout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>登出</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <>
               <Button variant="ghost" asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/login">登录</Link>
               </Button>
               <Button asChild>
-                <Link href="/register">Register</Link>
+                <Link href="/register">注册</Link>
               </Button>
             </>
           )}

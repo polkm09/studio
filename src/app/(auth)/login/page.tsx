@@ -1,8 +1,9 @@
+
 import LoginForm from '@/components/auth/LoginForm';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Login - Feiwu HTML Playground',
+  title: '登录 - 飞舞HTML游乐场',
 };
 
 export default function LoginPage() {

@@ -1,3 +1,4 @@
+
 import { type NextRequest, NextResponse } from 'next/server';
 import { MOCK_HTML_PAGES } from '@/lib/types'; // Using mock data
 
@@ -30,11 +31,11 @@ export async function GET(
   } else {
     const notFoundHtml = `
       <!DOCTYPE html>
-      <html lang="en">
+      <html lang="zh-CN">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>404 - Page Not Found</title>
+        <title>404 - 页面未找到</title>
         <style>
           body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; color: #333; text-align: center; }
           .container { padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -46,9 +47,9 @@ export async function GET(
       </head>
       <body>
         <div class="container">
-          <h1>404 - Page Not Found</h1>
-          <p>Sorry, the page you are looking for does not exist or may have been moved.</p>
-          <p><a href="/">Return to Homepage</a></p>
+          <h1>404 - 页面未找到</h1>
+          <p>抱歉，您正在查找的页面不存在或已被移动。</p>
+          <p><a href="/">返回首页</a></p>
         </div>
       </body>
       </html>
