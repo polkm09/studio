@@ -29,13 +29,13 @@ export const MOCK_INVITATION_CODES: InvitationCode[] = [
 ];
 
 export const MOCK_USERS: User[] = [
-  { id: 'admin-user-id', mobile: '10000000000', role: 'admin' }, // Changed admin mobile to 11-digit number
+  { id: 'admin-user-id', mobile: '17724631620', role: 'admin' }, // Changed admin mobile to 11-digit number
   { id: 'test-user-id', mobile: '13800138000', role: 'user' },
 ];
 
 // Passwords should be hashed in a real DB. Storing plain text here for mock only.
 export const MOCK_USER_CREDENTIALS: Record<string, string> = {
-  '10000000000': 'feiwu0609', // Updated admin mobile key
+  '17724631620': 'feiwu0609', // Updated admin mobile key
   '13800138000': 'password123',
 };
 
@@ -60,6 +60,7 @@ export const MOCK_HTML_PAGES: HtmlPage[] = [
 </html>`, 
     createdAt: new Date().toISOString(), 
     creatorId: 'admin-user-id',
-    creatorMobile: '10000000000' // Updated admin mobile for sample page
+    creatorMobile: '17724631620' // Updated admin mobile for sample page
   },
 ];
+
