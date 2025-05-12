@@ -52,7 +52,7 @@ export const MOCK_HTML_PAGES: HtmlPage[] = [
 </head>
 <body>
   <div class="container">
-    <h1>来自飞舞工作室的问候!</h1>
+    <h1>来自 FEIWU.Studio 的问候!</h1>
     <p>这是HTML游乐场生成的示例页面。</p>
     <p>您可以创建自己的页面！</p>
     <script>console.log("示例页面脚本已执行。");</script>
@@ -64,3 +64,4 @@ export const MOCK_HTML_PAGES: HtmlPage[] = [
     creatorMobile: '17724631620' // Updated admin mobile for sample page
   },
 ];
+

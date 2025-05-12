@@ -71,7 +71,7 @@ const RegisterForm = () => {
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader>
         <CardTitle className="text-3xl font-bold text-center">注册</CardTitle>
-        <CardDescription className="text-center">创建您的飞舞工作室账户。</CardDescription>
+        <CardDescription className="text-center">创建您的 FEIWU.Studio 账户。</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -109,3 +109,4 @@ const RegisterForm = () => {
 };
 
 export default RegisterForm;
+

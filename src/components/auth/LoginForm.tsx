@@ -53,7 +53,7 @@ const LoginForm = () => {
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader>
         <CardTitle className="text-3xl font-bold text-center">登录</CardTitle>
-        <CardDescription className="text-center">访问您的飞舞工作室账户。</CardDescription>
+        <CardDescription className="text-center">访问您的 FEIWU.Studio 账户。</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -86,3 +86,4 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+

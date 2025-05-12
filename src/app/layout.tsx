@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: '飞舞HTML游乐场',
+  title: 'FEIWU HTML 游乐场',
   description: '粘贴HTML代码并生成唯一的、可公开访问的网页。',
 };
 
@@ -36,3 +36,4 @@ export default function RootLayout({
     </html>
   );
 }
+

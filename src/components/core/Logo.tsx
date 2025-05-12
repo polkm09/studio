@@ -17,15 +17,16 @@ const Logo: FC<LogoProps> = ({ size = 'md', className }) => {
         xmlns="http://www.w3.org/2000/svg" 
         viewBox="0 0 24 24" 
         className={`${svgSizeClass} fill-primary`}
-        aria-label="飞舞工作室图标"
+        aria-label="FEIWU.Studio 图标"
       >
         <path d="M4 4h16v2H4zM4 9h16v2H4zM4 14h10v2H4zM19 14h1v6h-1zM16 18h3v2h-3z"/>
       </svg>
       <span className={`${textSizeClass} font-bold text-foreground whitespace-nowrap`}>
-        飞舞<span className="text-primary">.工作室</span>
+        FEIWU<span className="text-primary">.Studio</span>
       </span>
     </Link>
   );
 };
 
 export default Logo;
+
