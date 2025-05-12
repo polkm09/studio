@@ -1,4 +1,3 @@
-
 import { type NextRequest, NextResponse } from 'next/server';
 import { MOCK_HTML_PAGES, type HtmlPage } from '@/lib/types';
 import { z } from 'zod';
@@ -29,9 +28,9 @@ export async function POST(request: NextRequest) {
       creatorMobile: creatorMobile || undefined, // Ensure it's undefined if not provided
     };
 
-    // This push modifies the MOCK_HTML_PAGES array in the server's memory space.
-    // In a real application, this would be a database insertion.
-    MOCK_HTML_PAGES.push(newPage);
+    // This unshift modifies the MOCK_HTML_PAGES array in the server's memory space.
+    // Newest pages will appear at the top.
+    MOCK_HTML_PAGES.unshift(newPage);
 
     const baseUrl = request.nextUrl.origin;
     const generatedLink = `${baseUrl}/view/${uniqueId}`;

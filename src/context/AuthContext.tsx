@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { User, InvitationCode } from '@/lib/types';
@@ -57,7 +56,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       throw new Error("无效的手机号码格式。");
     }
 
-    const codeEntryIndex = MOCK_INVITATION_CODES.findIndex(c => c.code === invitationCode.toUpperCase());
+    const codeToValidate = invitationCode.trim().toUpperCase();
+    const codeEntryIndex = MOCK_INVITATION_CODES.findIndex(c => c.code === codeToValidate);
     
     if (codeEntryIndex === -1) {
       setLoading(false);
@@ -108,4 +108,3 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-

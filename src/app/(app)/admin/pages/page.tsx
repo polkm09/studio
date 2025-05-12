@@ -1,6 +1,5 @@
-
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -27,26 +26,29 @@ export default function ManagePagesPage() {
   const { toast } = useToast();
   const [baseUrl, setBaseUrl] = useState('');
 
-  useEffect(() => {
-    // Initializes 'pages' with a copy from the imported MOCK_HTML_PAGES when the component mounts.
-    // If MOCK_HTML_PAGES is updated by a server API route (e.g., after publishing a page),
-    // this client component will pick up the "new" state of the MOCK_HTML_PAGES module
-    // if it is reloaded (hard refresh) or remounts.
-    // Client-side navigation without a full remount might show stale data due to how modules are cached/handled.
+  const refreshPages = useCallback(() => {
+    // Always get the latest from the (potentially client-side mutated) MOCK_HTML_PAGES
     setPages(MOCK_HTML_PAGES ? [...MOCK_HTML_PAGES] : []);
+  }, []);
+
+  useEffect(() => {
+    refreshPages(); // Initial load
     if (typeof window !== "undefined") {
       setBaseUrl(window.location.origin);
     }
-  }, []); // Empty dependency array ensures this runs once on mount
+    // Add MOCK_HTML_PAGES.length as a dependency to try and refresh if it changes.
+    // This is a bit of a hack for mock data; a real app would use data fetching libraries.
+  }, [refreshPages, MOCK_HTML_PAGES.length]); 
+
 
   const handleDeletePage = (pageId: string) => {
     const pageIndex = MOCK_HTML_PAGES.findIndex(p => p.id === pageId);
     if (pageIndex > -1) {
-      MOCK_HTML_PAGES.splice(pageIndex, 1); // Mutate the global mock array
-      setPages([...MOCK_HTML_PAGES]); // Update local state with a new copy from the mutated global mock
+      MOCK_HTML_PAGES.splice(pageIndex, 1); 
+      refreshPages(); // Refresh local state from the mutated global mock
       toast({ title: "页面已删除", description: `已发布的页面 ${pageId} 已被移除。` });
     } else {
-      setPages([...MOCK_HTML_PAGES]);
+      refreshPages(); // Refresh even if not found, to ensure consistency
       toast({ title: "删除提示", description: `页面 ${pageId} 未找到或已被删除。列表已刷新。`, variant: "default" });
     }
   };
@@ -127,4 +129,3 @@ export default function ManagePagesPage() {
     </div>
   );
 }
-
