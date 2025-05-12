@@ -7,19 +7,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Share2, Link as LinkIcon } from 'lucide-react';
-import { MOCK_HTML_PAGES } from '@/lib/types'; // For mock page creation
+// MOCK_HTML_PAGES is no longer directly modified here
 import { useAuth } from '@/hooks/useAuth';
 
 const CodeEditor = () => {
   const [htmlCode, setHtmlCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [generatedLink, setGeneratedLink] = useState('');
-  const [baseUrl, setBaseUrl] = useState('');
+  const [baseUrl, setBaseUrl] = useState(''); // Base URL is set in useEffect, but API will provide full link
   const { toast } = useToast();
   const { user } = useAuth();
 
   useEffect(() => {
     // Ensure this runs only on the client side
+    // This is kept for potential other uses, but generatedLink now comes fully formed from API
     setBaseUrl(window.location.origin);
   }, []);
 
@@ -32,22 +33,37 @@ const CodeEditor = () => {
     setIsLoading(true);
     setGeneratedLink('');
 
-    // Simulate API call to save code
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
-      
-      // Mock ID generation & storage
-      const uniqueId = `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
-      const newPage = {
-        id: uniqueId,
-        htmlContent: htmlCode,
-        createdAt: new Date().toISOString(),
-        creatorId: user?.id || 'unknown-user', 
-        creatorMobile: user?.mobile 
-      };
-      MOCK_HTML_PAGES.push(newPage); // Add to mock DB
+      const response = await fetch('/api/publish', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          htmlContent: htmlCode,
+          creatorId: user?.id || 'unknown-user',
+          creatorMobile: user?.mobile,
+        }),
+      });
 
-      setGeneratedLink(`${baseUrl}/view/${uniqueId}`);
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Attempt to parse more detailed error from backend if available
+        let errorMessage = "无法发布你的页面。";
+        if (result.error) {
+          errorMessage = result.error;
+          if (result.details && typeof result.details === 'object') {
+            // Basic formatting for Zod errors, can be more sophisticated
+            errorMessage += ": " + Object.entries(result.details).map(([field, issue]) => `${field}: ${(issue as any)._errors?.join(', ')}`).join('; ');
+          } else if (result.details && typeof result.details === 'string') {
+             errorMessage += ": " + result.details;
+          }
+        }
+        throw new Error(errorMessage);
+      }
+
+      setGeneratedLink(result.link); // API now returns the full link
       toast({ title: "页面已发布", description: "你的HTML页面现已上线。" });
       setHtmlCode(''); // Clear textarea after successful submission
     } catch (error) {
@@ -96,8 +112,8 @@ const CodeEditor = () => {
       </CardContent>
       {generatedLink && (
         <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t">
-          <div className="flex items-center space-x-2">
-            <LinkIcon className="h-5 w-5 text-primary" />
+          <div className="flex items-center space-x-2 overflow-hidden">
+            <LinkIcon className="h-5 w-5 text-primary flex-shrink-0" />
             <a
               href={generatedLink}
               target="_blank"
