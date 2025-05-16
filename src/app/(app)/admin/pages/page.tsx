@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
@@ -26,29 +27,30 @@ export default function ManagePagesPage() {
   const { toast } = useToast();
   const [baseUrl, setBaseUrl] = useState('');
 
-  const refreshPages = useCallback(() => {
-    // Always get the latest from the (potentially client-side mutated) MOCK_HTML_PAGES
-    setPages(MOCK_HTML_PAGES ? [...MOCK_HTML_PAGES] : []);
-  }, []);
-
   useEffect(() => {
-    refreshPages(); // Initial load
+    // Directly use the global store here to ensure we get the latest data.
+    // The spread operator creates a new array, triggering a re-render if the content differs.
+    console.log("ManagePagesPage useEffect triggered. MOCK_HTML_PAGES_STORE length:", global.MOCK_HTML_PAGES_STORE?.length);
+    setPages(global.MOCK_HTML_PAGES_STORE ? [...global.MOCK_HTML_PAGES_STORE] : []);
+    
     if (typeof window !== "undefined") {
       setBaseUrl(window.location.origin);
     }
-    // Add MOCK_HTML_PAGES.length as a dependency to try and refresh if it changes.
-    // This is a bit of a hack for mock data; a real app would use data fetching libraries.
-  }, [refreshPages, MOCK_HTML_PAGES.length]); 
+    // Depend on the length of the global store.
+    // When MOCK_HTML_PAGES_STORE.unshift() happens elsewhere, its length changes,
+    // and this effect should re-run.
+  }, [global.MOCK_HTML_PAGES_STORE?.length]); 
 
 
   const handleDeletePage = (pageId: string) => {
-    const pageIndex = MOCK_HTML_PAGES.findIndex(p => p.id === pageId);
+    const pageIndex = global.MOCK_HTML_PAGES_STORE.findIndex(p => p.id === pageId);
     if (pageIndex > -1) {
-      MOCK_HTML_PAGES.splice(pageIndex, 1); 
-      refreshPages(); // Refresh local state from the mutated global mock
+      global.MOCK_HTML_PAGES_STORE.splice(pageIndex, 1); 
+      // Trigger a refresh by explicitly updating the state based on the mutated global store
+      setPages([...global.MOCK_HTML_PAGES_STORE]);
       toast({ title: "页面已删除", description: `已发布的页面 ${pageId} 已被移除。` });
     } else {
-      refreshPages(); // Refresh even if not found, to ensure consistency
+      setPages([...global.MOCK_HTML_PAGES_STORE]); // Refresh even if not found, to ensure consistency
       toast({ title: "删除提示", description: `页面 ${pageId} 未找到或已被删除。列表已刷新。`, variant: "default" });
     }
   };
@@ -129,3 +131,4 @@ export default function ManagePagesPage() {
     </div>
   );
 }
+
