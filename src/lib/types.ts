@@ -6,7 +6,7 @@ export interface User {
 }
 
 export interface InvitationCode {
-  id: string;
+  id:string;
   code: string;
   usedBy: string | null; // userId
   createdAt: string; // ISO date string
@@ -33,8 +33,12 @@ declare global {
   var MOCK_HTML_PAGES_STORE: HtmlPage[] | undefined;
 }
 
+// These global stores simulate a database.
+// They will be accessed and managed by the service layer (src/services/*).
+
 // Invitation Codes
-if (!global.MOCK_INVITATION_CODES_STORE) {
+if (global.MOCK_INVITATION_CODES_STORE === undefined) {
+  console.log("Initializing MOCK_INVITATION_CODES_STORE");
   global.MOCK_INVITATION_CODES_STORE = [
     { id: '1', code: 'WELCOME123', usedBy: null, createdAt: new Date().toISOString(), isValid: true },
     { id: '2', code: 'FEIWU2024', usedBy: null, createdAt: new Date().toISOString(), isValid: true },
@@ -44,7 +48,8 @@ if (!global.MOCK_INVITATION_CODES_STORE) {
 export const MOCK_INVITATION_CODES: InvitationCode[] = global.MOCK_INVITATION_CODES_STORE;
 
 // Users
-if (!global.MOCK_USERS_STORE) {
+if (global.MOCK_USERS_STORE === undefined) {
+  console.log("Initializing MOCK_USERS_STORE");
   global.MOCK_USERS_STORE = [
     { id: 'admin-user-id', mobile: '17724631620', role: 'admin' },
     { id: 'test-user-id', mobile: '13800138000', role: 'user' },
@@ -53,7 +58,8 @@ if (!global.MOCK_USERS_STORE) {
 export const MOCK_USERS: User[] = global.MOCK_USERS_STORE;
 
 // User Credentials
-if (!global.MOCK_USER_CREDENTIALS_STORE) {
+if (global.MOCK_USER_CREDENTIALS_STORE === undefined) {
+  console.log("Initializing MOCK_USER_CREDENTIALS_STORE");
   global.MOCK_USER_CREDENTIALS_STORE = {
     '17724631620': 'feiwu0609',
     '13800138000': 'password123',
@@ -71,14 +77,15 @@ const initialMockHtmlPageContent = `<!DOCTYPE html>
 <body>
   <div class="container">
     <h1>来自 FEIWU.Studio 的问候!</h1>
-    <p>这是HTML Studio生成的示例页面。</p>
+    <p>这是Studio生成的示例页面。</p>
     <p>你可以创建自己的页面！</p>
     <script>console.log("示例页面脚本已执行。");</script>
   </div>
 </body>
 </html>`;
 
-if (!global.MOCK_HTML_PAGES_STORE) {
+if (global.MOCK_HTML_PAGES_STORE === undefined) {
+  console.log("Initializing MOCK_HTML_PAGES_STORE");
   global.MOCK_HTML_PAGES_STORE = [
     { 
       id: 'welcome-page', 

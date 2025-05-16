@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -7,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Share2, Link as LinkIcon } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { MOCK_HTML_PAGES, type HtmlPage } from '@/lib/types'; // Import MOCK_HTML_PAGES and HtmlPage type
+// Removed direct import of MOCK_HTML_PAGES as it's no longer managed client-side this way for publishing.
 
 const CodeEditor = () => {
   const [htmlCode, setHtmlCode] = useState('');
@@ -18,11 +19,17 @@ const CodeEditor = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    setBaseUrl(window.location.origin);
+    if (typeof window !== "undefined") {
+      setBaseUrl(window.location.origin);
+    }
   }, []);
 
 
   const handleShipIt = async () => {
+    if (!user) {
+      toast({ title: "未认证", description: "请登录后再发布页面。", variant: "destructive" });
+      return;
+    }
     if (!htmlCode.trim()) {
       toast({ title: "代码为空", description: "请在发布前粘贴一些HTML代码。", variant: "destructive" });
       return;
@@ -38,8 +45,8 @@ const CodeEditor = () => {
         },
         body: JSON.stringify({
           htmlContent: htmlCode,
-          creatorId: user?.id || 'unknown-user',
-          creatorMobile: user?.mobile,
+          creatorId: user.id,
+          creatorMobile: user.mobile,
         }),
       });
 
@@ -57,16 +64,10 @@ const CodeEditor = () => {
         }
         throw new Error(errorMessage);
       }
-
-      // Update client-side mock data to reflect the new page
-      const newPageClientMock: HtmlPage = {
-        id: result.id, // The ID returned by the API
-        htmlContent: htmlCode, // The HTML content that was submitted
-        createdAt: new Date().toISOString(), // Use current time for mock
-        creatorId: user?.id || 'unknown-user',
-        creatorMobile: user?.mobile,
-      };
-      MOCK_HTML_PAGES.unshift(newPageClientMock); // Add to the beginning of the client-side array
+      
+      // The global MOCK_HTML_PAGES is updated by the API route now via the service.
+      // No need for client-side MOCK_HTML_PAGES.unshift(...) here.
+      // The admin page will fetch fresh data.
 
       setGeneratedLink(result.link); 
       toast({ title: "页面已发布", description: "你的HTML页面现已上线。" });
@@ -106,7 +107,7 @@ const CodeEditor = () => {
           className="min-h-[300px] font-mono text-sm bg-card border-input rounded-md shadow-sm focus:ring-primary focus:border-primary"
           aria-label="HTML代码输入框"
         />
-        <Button onClick={handleShipIt} className="w-full sm:w-auto" disabled={isLoading}>
+        <Button onClick={handleShipIt} className="w-full sm:w-auto" disabled={isLoading || !user}>
           {isLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -114,6 +115,7 @@ const CodeEditor = () => {
           )}
           发布
         </Button>
+        {!user && <p className="text-sm text-muted-foreground text-center">请登录以发布页面。</p>}
       </CardContent>
       {generatedLink && (
         <CardFooter className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t">

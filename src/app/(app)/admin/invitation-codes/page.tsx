@@ -1,13 +1,13 @@
 
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MOCK_INVITATION_CODES, type InvitationCode } from "@/lib/types";
-import { PlusCircle, Trash2, CheckCircle, XCircle } from "lucide-react";
+import type { InvitationCode } from "@/lib/types"; // Type import
+import { PlusCircle, Trash2, CheckCircle, XCircle, Loader2 } from "lucide-react";
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -32,40 +32,56 @@ import {
 } from "@/components/ui/alert-dialog";
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
+import { getAllInvitationCodes, addInvitationCode, deleteInvitationCode } from '@/services/invitationCodeService';
 
 export default function ManageInvitationCodesPage() {
   const [codes, setCodes] = useState<InvitationCode[]>([]);
   const [newCodeValue, setNewCodeValue] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    setCodes(MOCK_INVITATION_CODES);
-  }, []);
+  const fetchCodes = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const fetchedCodes = await getAllInvitationCodes();
+      setCodes(fetchedCodes);
+    } catch (error) {
+      toast({ title: "获取邀请码失败", description: (error as Error).message, variant: "destructive" });
+      setCodes([]); // Clear codes on error
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
 
-  const handleGenerateCode = () => {
+  useEffect(() => {
+    fetchCodes();
+  }, [fetchCodes]);
+
+  const handleGenerateCode = async () => {
     if (!newCodeValue.trim()) {
       toast({ title: "无效的邀请码", description: "请输入新邀请码的值。", variant: "destructive" });
       return;
     }
-    const newCode: InvitationCode = {
-      id: `code-${Date.now()}`,
-      code: newCodeValue.trim().toUpperCase(),
-      usedBy: null,
-      createdAt: new Date().toISOString(),
-      isValid: true,
-    };
-    setCodes(prevCodes => [newCode, ...prevCodes]);
-    MOCK_INVITATION_CODES.unshift(newCode); // Update mock source
-    toast({ title: "邀请码已生成", description: `新的邀请码 “${newCode.code}” 已添加。` });
-    setNewCodeValue('');
-    setIsAddDialogOpen(false);
+    try {
+      const newCode = await addInvitationCode(newCodeValue);
+      toast({ title: "邀请码已生成", description: `新的邀请码 “${newCode.code}” 已添加。` });
+      setNewCodeValue('');
+      setIsAddDialogOpen(false);
+      await fetchCodes(); // Refresh the list
+    } catch (error) {
+      toast({ title: "生成邀请码失败", description: (error as Error).message, variant: "destructive" });
+    }
   };
 
-  const handleDeleteCode = (codeId: string) => {
-    setCodes(prevCodes => prevCodes.filter(code => code.id !== codeId));
-    MOCK_INVITATION_CODES.splice(MOCK_INVITATION_CODES.findIndex(c => c.id === codeId), 1);
-    toast({ title: "邀请码已删除", description: `邀请码已被移除。` });
+  const handleDeleteCode = async (codeId: string, codeValue?: string) => {
+    try {
+      await deleteInvitationCode(codeId);
+      toast({ title: "邀请码已删除", description: `邀请码 ${codeValue || ''} 已被移除。` });
+      await fetchCodes(); // Refresh the list
+    } catch (error) {
+      toast({ title: "删除邀请码失败", description: (error as Error).message, variant: "destructive" });
+    }
   };
 
   return (
@@ -115,69 +131,75 @@ export default function ManageInvitationCodesPage() {
           <CardDescription>查看、生成和删除邀请码。</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>邀请码</TableHead>
-                <TableHead>状态</TableHead>
-                <TableHead>使用者 (用户ID)</TableHead>
-                <TableHead>创建于</TableHead>
-                <TableHead className="text-right">操作</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {codes.length === 0 && (
+          {isLoading ? (
+             <div className="flex justify-center items-center h-24">
+               <Loader2 className="h-8 w-8 animate-spin text-primary" />
+             </div>
+          ) : (
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center h-24">未找到邀请码。</TableCell>
+                  <TableHead>邀请码</TableHead>
+                  <TableHead>状态</TableHead>
+                  <TableHead>使用者 (用户ID)</TableHead>
+                  <TableHead>创建于</TableHead>
+                  <TableHead className="text-right">操作</TableHead>
                 </TableRow>
-              )}
-              {codes.map((code) => (
-                <TableRow key={code.id}>
-                  <TableCell className="font-mono font-medium">{code.code}</TableCell>
-                  <TableCell>
-                    {code.isValid && !code.usedBy ? (
-                      <span className="inline-flex items-center text-xs font-medium text-emerald-600">
-                        <CheckCircle className="w-3.5 h-3.5 mr-1.5" /> 可用
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center text-xs font-medium text-red-600">
-                        <XCircle className="w-3.5 h-3.5 mr-1.5" /> 已使用/无效
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className="font-mono text-xs">{code.usedBy || '无'}</TableCell>
-                  <TableCell>{format(new Date(code.createdAt), "yyyy年MM月dd日 HH:mm", { locale: zhCN })}</TableCell>
-                  <TableCell className="text-right">
-                     <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">删除邀请码</span>
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>你确定吗？</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              此操作无法撤销。这将永久删除邀请码 “{code.code}”。
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>取消</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDeleteCode(code.id)}
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                              删除
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {codes.length === 0 && !isLoading && (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center h-24">未找到邀请码。</TableCell>
+                  </TableRow>
+                )}
+                {codes.map((code) => (
+                  <TableRow key={code.id}>
+                    <TableCell className="font-mono font-medium">{code.code}</TableCell>
+                    <TableCell>
+                      {code.isValid && !code.usedBy ? (
+                        <span className="inline-flex items-center text-xs font-medium text-emerald-600">
+                          <CheckCircle className="w-3.5 h-3.5 mr-1.5" /> 可用
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center text-xs font-medium text-red-600">
+                          <XCircle className="w-3.5 h-3.5 mr-1.5" /> {code.usedBy ? '已使用' : '无效'}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">{code.usedBy || '无'}</TableCell>
+                    <TableCell>{format(new Date(code.createdAt), "yyyy年MM月dd日 HH:mm", { locale: zhCN })}</TableCell>
+                    <TableCell className="text-right">
+                       <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                              <span className="sr-only">删除邀请码</span>
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>你确定吗？</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                此操作无法撤销。这将永久删除邀请码 “{code.code}”。
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>取消</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteCode(code.id, code.code)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                删除
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

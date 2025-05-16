@@ -1,8 +1,17 @@
+
 "use client";
 
-import type { User, InvitationCode } from '@/lib/types';
+import type { User } from '@/lib/types';
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { MOCK_USERS, MOCK_USER_CREDENTIALS, MOCK_INVITATION_CODES } from '@/lib/types'; 
+import { 
+  validateUserCredentials, 
+  getUserByMobile, 
+  addUser as addUserService 
+} from '@/services/userService';
+import { 
+  getInvitationCodeByCode, 
+  useInvitationCode as useInvitationCodeService 
+} from '@/services/invitationCodeService';
 
 interface AuthContextType {
   user: User | null;
@@ -23,78 +32,72 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate checking for an existing session
+    setLoading(true);
     const storedUser = sessionStorage.getItem('feiwuUser');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        // Optional: Add validation here to ensure parsedUser is a valid User object
+        setUser(parsedUser);
+      } catch (e) {
+        console.error("Failed to parse stored user:", e);
+        sessionStorage.removeItem('feiwuUser');
+      }
     }
     setLoading(false);
   }, []);
 
   const login = useCallback(async (mobile: string, password: string): Promise<User | null> => {
     setLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const foundUser = MOCK_USERS.find(u => u.mobile === mobile);
-    if (foundUser && MOCK_USER_CREDENTIALS[mobile] === password) {
-      setUser(foundUser);
-      sessionStorage.setItem('feiwuUser', JSON.stringify(foundUser));
+    try {
+      const validatedUser = await validateUserCredentials(mobile, password);
+      if (validatedUser) {
+        setUser(validatedUser);
+        sessionStorage.setItem('feiwuUser', JSON.stringify(validatedUser));
+        return validatedUser;
+      }
+      return null;
+    } finally {
       setLoading(false);
-      return foundUser;
     }
-    setLoading(false);
-    return null;
   }, []);
 
-  const register = useCallback(async (mobile: string, password: string, invitationCode: string): Promise<User | null> => {
+  const register = useCallback(async (mobile: string, password: string, invitationCodeInput: string): Promise<User | null> => {
     setLoading(true);
-    // Simulate API call & invitation code check
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    if (!/^\d{11}$/.test(mobile)) {
+    try {
+      if (!/^\d{11}$/.test(mobile)) {
+        throw new Error("无效的手机号码格式。");
+      }
+
+      const existingUser = await getUserByMobile(mobile);
+      if (existingUser) {
+        throw new Error("手机号码已被注册。");
+      }
+      
+      const codeToValidate = invitationCodeInput.trim().toUpperCase();
+      const codeEntry = await getInvitationCodeByCode(codeToValidate);
+
+      if (!codeEntry) {
+        throw new Error("邀请码无效。");
+      }
+
+      if (!codeEntry.isValid || codeEntry.usedBy) {
+        throw new Error("邀请码无效或已被使用。");
+      }
+
+      // Attempt to add user first. If this fails, invitation code is not used.
+      const newUser = await addUserService(mobile, password);
+      
+      // If user added successfully, then mark invitation code as used
+      await useInvitationCodeService(codeEntry.id, newUser.id);
+      
+      // No automatic login after registration, user should proceed to login page
+      // setUser(newUser); 
+      // sessionStorage.setItem('feiwuUser', JSON.stringify(newUser));
+      return newUser; 
+    } finally {
       setLoading(false);
-      throw new Error("无效的手机号码格式。");
     }
-
-    const codeToValidate = invitationCode.trim().toUpperCase();
-    const codeEntryIndex = MOCK_INVITATION_CODES.findIndex(c => c.code === codeToValidate);
-    
-    if (codeEntryIndex === -1) {
-      setLoading(false);
-      throw new Error("邀请码无效。");
-    }
-
-    const codeEntry = MOCK_INVITATION_CODES[codeEntryIndex];
-
-    if (!codeEntry.isValid || codeEntry.usedBy) {
-      setLoading(false);
-      throw new Error("邀请码无效或已被使用。");
-    }
-
-    if (MOCK_USERS.find(u => u.mobile === mobile)) {
-      setLoading(false);
-      throw new Error("手机号码已被注册。");
-    }
-    
-    const newUser: User = { id: `user-${Date.now()}`, mobile, role: 'user' };
-    MOCK_USERS.push(newUser); // Add user to mock list
-    MOCK_USER_CREDENTIALS[mobile] = password; // Add credentials to mock list
-
-    // Mark invitation code as used
-    MOCK_INVITATION_CODES[codeEntryIndex] = {
-      ...codeEntry,
-      isValid: false,
-      usedBy: newUser.id,
-    };
-    
-    // Note: In a real app, MOCK_USERS, MOCK_USER_CREDENTIALS, and MOCK_INVITATION_CODES updates
-    // would be persistent database operations. Here they modify in-memory arrays.
-    // For MOCK_INVITATION_CODES, if admin page is open, it won't reflect change until refresh.
-
-    setUser(newUser); // Set current user for the session
-    sessionStorage.setItem('feiwuUser', JSON.stringify(newUser));
-    setLoading(false);
-    return newUser;
   }, []);
 
   const logout = useCallback(() => {
